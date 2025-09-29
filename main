@@ -1,0 +1,66 @@
+#include <iostream>
+using namespace std;
+typedef struct Task {
+    string description;
+    bool completed;
+    struct Task* next;
+    struct Task* prev;
+} Task;
+
+typedef struct TaskList {
+    Task* debut;
+    Task* fin;
+} TaskList;
+void init(TaskList* list) {
+    list->debut = nullptr;
+    list->fin = nullptr;
+}
+
+void addTask()
+
+
+
+
+
+
+
+void switchcase(int choice){
+    switch(choice){
+        case 1:
+        cout<<"Add Task";
+        break;
+        case 2:
+        cout<<"Delete Task";
+        break;
+        case 3:
+        cout<<"View Tasks";
+        break;
+        case 4:
+        cout<<"mark Task as Completed";
+        break;
+        default:
+        cout<<"Invalid choice";
+    }
+}
+int enterchoice(){
+cout<<"Enter your choice";
+int choice;
+cin>>choice;
+return choice;
+}
+void display()
+{
+cout<<"Hello to todolist|n";
+cout<<"1- Add Task\n";
+cout<<"2- Delete Task\n";
+cout<<"3- View Tasks\n";
+cout<<"4-mark Task as Completed\n";
+
+
+}
+int main()
+{
+display();
+   switchcase(enterchoice());
+    return 0;
+}
