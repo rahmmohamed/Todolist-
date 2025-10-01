@@ -1,3 +1,4 @@
+// main.cpp
 #include <iostream>
 using namespace std;
 typedef struct Task {
@@ -10,13 +11,39 @@ typedef struct Task {
 typedef struct TaskList {
     Task* debut;
     Task* fin;
+    int size=0;
 } TaskList;
 void init(TaskList* list) {
-    list->debut = nullptr;
-    list->fin = nullptr;
+    
+   Task* newTask = new Task();
+    newTask->description = "";
+    newTask->completed = false;
+    newTask->next = nullptr;
+    newTask->prev = nullptr;
+    list->debut = newTask;
+    list->fin = newTask;
+}
+void addTask(TaskList* list) {
+    Task* newTask = new Task();
+    cout << "Enter task description: ";
+    cin.ignore(); // To ignore any leftover newline character in the input buffer
+    getline(cin, newTask->description);
+    newTask->completed = false;
+    if(list->size == 0) {
+        list->debut = newTask;
+        list->fin = newTask;
+        newTask->next = nullptr;
+        newTask->prev = nullptr;
+    } else {
+        list->fin->next = newTask;
+        newTask->prev = list->fin;
+        newTask->next = nullptr;
+        list->fin = newTask;
+        list->size++;
+    }
+
 }
 
-void addTask()
 
 
 
