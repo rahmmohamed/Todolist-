@@ -23,26 +23,44 @@ void init(TaskList* list) {
     list->debut = newTask;
     list->fin = newTask;
 }
-void addTask(TaskList* list) {
-    Task* newTask = new Task();
-    cout << "Enter task description: ";
-    cin.ignore(); // To ignore any leftover newline character in the input buffer
-    getline(cin, newTask->description);
-    newTask->completed = false;
-    if(list->size == 0) {
-        list->debut = newTask;
-        list->fin = newTask;
-        newTask->next = nullptr;
-        newTask->prev = nullptr;
-    } else {
-        list->fin->next = newTask;
-        newTask->prev = list->fin;
-        newTask->next = nullptr;
-        list->fin = newTask;
-        list->size++;
+void addTask(TaskList **list) {
+cout<<"Enter task description: ";
+string desc;
+cin.ignore(); // To ignore the newline character left in the buffer
+getline(cin, desc);
+Task* newTask = new Task();
+newTask->description = desc;
+newTask->completed = false;
+if((*list)->size == 0) {
+    (*list)->debut = newTask;
+    (*list)->fin = newTask;
     }
+else {
+    newTask->prev = (*list)->fin;
+    (*list)->fin->next = newTask;
+    (*list)->fin = newTask;
+}
+(*list)->size++;
+}
+void deleteTask(TaskList **list, int index) {
+if(index < 0 || index >= (*list)->size) {
+    cout << "Invalid index" << endl;
+    return;
 
 }
+int i = 0;
+Task* current = (*list)->debut;
+while(i < index) {
+    current = current->next;
+    i++;
+}
+current->prev->next = current->next;
+current->next->prev = current->prev;
+free(current);
+(*list)->size--;
+
+}
+
 
 
 
