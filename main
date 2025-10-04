@@ -1,111 +1,158 @@
-// main.cpp
 #include <iostream>
 using namespace std;
-typedef struct Task {
+
+struct Task {
     string description;
     bool completed;
-    struct Task* next;
-    struct Task* prev;
-} Task;
+    Task* next;
+    Task* prev;
+};
 
-typedef struct TaskList {
+struct TaskList {
     Task* debut;
     Task* fin;
-    int size=0;
-} TaskList;
+    int size;
+};
+
 void init(TaskList* list) {
-    
-   Task* newTask = new Task();
-    newTask->description = "";
+    list->debut = nullptr;
+    list->fin = nullptr;
+    list->size = 0;
+}
+
+void addTask(TaskList* list) {
+    cout << "Enter task description: ";
+    cin.ignore();
+    string desc;
+    getline(cin, desc);
+
+    Task* newTask = new Task();
+    newTask->description = desc;
     newTask->completed = false;
     newTask->next = nullptr;
     newTask->prev = nullptr;
-    list->debut = newTask;
-    list->fin = newTask;
-}
-void addTask(TaskList **list) {
-cout<<"Enter task description: ";
-string desc;
-cin.ignore(); // To ignore the newline character left in the buffer
-getline(cin, desc);
-Task* newTask = new Task();
-newTask->description = desc;
-newTask->completed = false;
-if((*list)->size == 0) {
-    (*list)->debut = newTask;
-    (*list)->fin = newTask;
+
+    if (list->size == 0) {
+        list->debut = newTask;
+        list->fin = newTask;
+    } else {
+        newTask->prev = list->fin;
+        list->fin->next = newTask;
+        list->fin = newTask;
     }
-else {
-    newTask->prev = (*list)->fin;
-    (*list)->fin->next = newTask;
-    (*list)->fin = newTask;
-}
-(*list)->size++;
-}
-void deleteTask(TaskList **list, int index) {
-if(index < 0 || index >= (*list)->size) {
-    cout << "Invalid index" << endl;
-    return;
-
-}
-int i = 0;
-Task* current = (*list)->debut;
-while(i < index) {
-    current = current->next;
-    i++;
-}
-current->prev->next = current->next;
-current->next->prev = current->prev;
-free(current);
-(*list)->size--;
-
+    list->size++;
+    cout << "Task added successfully!\n";
 }
 
+void deleteTask(TaskList* list, int index) {
+    if (index < 0 || index >= list->size) {
+        cout << "Invalid index\n";
+        return;
+    }
 
+    Task* current = list->debut;
+    for (int i = 0; i < index; i++) {
+        current = current->next;
+    }
 
+    if (current->prev == nullptr) {
+        list->debut = current->next;
+        if (list->debut != nullptr)
+            list->debut->prev = nullptr;
+    } else if (current->next == nullptr) {
+        list->fin = current->prev;
+        list->fin->next = nullptr;
+    } else {
+        current->prev->next = current->next;
+        current->next->prev = current->prev;
+    }
 
+    delete current;
+    list->size--;
+    cout << "Task deleted successfully!\n";
+}
 
+void viewTasks(TaskList* list) {
+    if (list->size == 0) {
+        cout << "No tasks available.\n";
+        return;
+    }
 
-
-
-
-void switchcase(int choice){
-    switch(choice){
-        case 1:
-        cout<<"Add Task";
-        break;
-        case 2:
-        cout<<"Delete Task";
-        break;
-        case 3:
-        cout<<"View Tasks";
-        break;
-        case 4:
-        cout<<"mark Task as Completed";
-        break;
-        default:
-        cout<<"Invalid choice";
+    Task* current = list->debut;
+    int index = 0;
+    while (current != nullptr) {
+        cout << index << ". " << current->description;
+        if (current->completed) cout << " [Completed]";
+        cout << endl;
+        current = current->next;
+        index++;
     }
 }
-int enterchoice(){
-cout<<"Enter your choice";
-int choice;
-cin>>choice;
-return choice;
-}
-void display()
-{
-cout<<"Hello to todolist|n";
-cout<<"1- Add Task\n";
-cout<<"2- Delete Task\n";
-cout<<"3- View Tasks\n";
-cout<<"4-mark Task as Completed\n";
 
+void markTaskCompleted(TaskList* list, int index) {
+    if (index < 0 || index >= list->size) {
+        cout << "Invalid index\n";
+        return;
+    }
 
+    Task* current = list->debut;
+    for (int i = 0; i < index; i++) {
+        current = current->next;
+    }
+
+    current->completed = true;
+    cout << "Task marked as completed!\n";
 }
-int main()
-{
-display();
-   switchcase(enterchoice());
+
+void displayMenu() {
+    cout << "\n===== TO-DO LIST =====\n";
+    cout << "1. Add Task\n";
+    cout << "2. Delete Task\n";
+    cout << "3. View Tasks\n";
+    cout << "4. Mark Task as Completed\n";
+    cout << "5. Exit\n";
+    cout << "======================\n";
+    cout << "Enter your choice: ";
+}
+
+int main() {
+    TaskList list;
+    init(&list);
+
+    int choice;
+    do {
+        displayMenu();
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                addTask(&list);
+                break;
+            case 2: {
+                int idx;
+                cout << "Enter index to delete: ";
+                cin >> idx;
+                deleteTask(&list, idx);
+                break;
+            }
+            case 3:
+                viewTasks(&list);
+                break;
+            case 4: {
+                int idx;
+                cout << "Enter index to mark as completed: ";
+                cin >> idx;
+                markTaskCompleted(&list, idx);
+                break;
+            }
+            case 5:
+                cout << "Exiting program...\n";
+                break;
+            default:
+                cout << "Invalid choice! Try again.\n";
+        }
+
+    } while (choice != 5);
+
     return 0;
 }
